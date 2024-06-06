@@ -1,0 +1,29 @@
+name: Autograding Tests
+'on':
+- workflow_dispatch
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: mvn-clean-compile-test
+      id: mvn-clean-compile-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: mvn-clean-compile-test
+        setup-command: ''
+        command: mvn clean compile test
+        timeout: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        MVN-CLEAN-COMPILE-TEST_RESULTS: "${{steps.mvn-clean-compile-test.outputs.result}}"
+      with:
+        runners: mvn-clean-compile-test
