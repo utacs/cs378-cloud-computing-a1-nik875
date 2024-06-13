@@ -3,15 +3,22 @@
 
 ## Team members' names 
 
-1. Student Name:
+1. Student Name: Rohan Nayak
 
-   Student UT EID:
+   Student UT EID: rsn474
 
 2. Student Name:
 
    Student UT EID:
 
- ...
+3. Student Name: Rohan Nayak
+
+   Student UT EID: rsn474
+
+4. Student Name: Rohan Nayak
+
+   Student UT EID: rsn474
+
 
 ##  Course Name: CS378 - Cloud Computing 
 
