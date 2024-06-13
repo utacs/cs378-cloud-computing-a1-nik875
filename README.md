@@ -11,13 +11,13 @@
 
    Student UT EID:
 
-3. Student Name: Rohan Nayak
+3. Student Name: 
 
-   Student UT EID: rsn474
+   Student UT EID: 
 
-4. Student Name: Rohan Nayak
+4. Student Name: 
 
-   Student UT EID: rsn474
+   Student UT EID: 
 
 
 ##  Course Name: CS378 - Cloud Computing 
