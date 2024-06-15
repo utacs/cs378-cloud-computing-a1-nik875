@@ -7,9 +7,9 @@
 
    Student UT EID: rsn474
 
-2. Student Name:
+2. Student Name: Ayaan Nazir
 
-   Student UT EID:
+   Student UT EID: an29256
 
 3. Student Name: 
 
@@ -18,6 +18,30 @@
 4. Student Name: 
 
    Student UT EID: 
+
+
+1. Data Cleanup
+In our project, we handled data cleanup by checking if the corresponding strings could be converted 
+into Floats and DateTime objects, checking if trip_time_in_secs lasted the duration of pickup_datetime 
+and dropoff_datetime (with a margin of error of 1 second), checking if longtitude and latitude values 
+were non-zero (zero is in the middle of the ocean, somewhere a NYC cab cannot travel to), and checking 
+if the payment type were CSH or CRD. We used "taxi-data-sorted-small.csv.bz2" to test data cleaning, and
+found inconsistencies in payment type and coordinates. Here are some examples:
+
+   1. Line 2: Invalid Coordinates
+      All coordinates read 0.
+   
+   2. Line 14: Invalid Coordinates
+      Dropoff longtitude and latitude read 0.
+   
+   3. Line 74: Invalid payment type
+      Payment is listed as "UNK".
+
+   4. Line 374: Invalid Coordinates
+      All coordinates read 0.
+
+   5. Line 516: Invalid payment type
+      Payment is listed as "UNK".
 
 
 ##  Course Name: CS378 - Cloud Computing 

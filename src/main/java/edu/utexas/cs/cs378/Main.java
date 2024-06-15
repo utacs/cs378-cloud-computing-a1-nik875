@@ -16,7 +16,7 @@ public class Main {
 		
 		// This line is just for Kia :) 
 		// You should pass the file name and path as first argument of this main method. 
-		String file = "/Users/kiat/Downloads/WikipediaPagesOneDocPerLine.txt.bz2";
+		String file = "taxi-data-sorted-small.csv.bz2";
 		
 		if(args.length>0)
 			file=args[0];
