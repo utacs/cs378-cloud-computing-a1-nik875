@@ -16,7 +16,8 @@ public class Main {
 		
 		// This line is just for Kia :) 
 		// You should pass the file name and path as first argument of this main method. 
-		String file = "taxi-data-sorted-small.csv.bz2";
+		String file = "src/main/java/edu/utexas/cs/cs378/taxi-data-sorted-small.csv.bz2";
+		String outputFile = "SORTED-FILE-RESULT.txt";
 		
 		if(args.length>0)
 			file=args[0];
@@ -35,9 +36,10 @@ public class Main {
 		
 		Map<String, Long> results = Reducer.reduceFromFile(outputTempFile);	
 		
-		MapToDataFile.appendToTempFile(results, "results.txt");
+		MapToDataFile.appendToTempFile(results, outputFile);
 		
-
+		MapToDataFile.sortData(file, outputFile);
+        MapToDataFile.displayFirst10Lines(outputFile);
 	}
 	
 }
