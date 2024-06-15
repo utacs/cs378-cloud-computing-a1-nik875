@@ -20,7 +20,7 @@
    Student UT EID: 
 
 
-1. Data Cleanup
+## Task 1: Data Cleanup
 In our project, we handled data cleanup by checking if the corresponding strings could be converted 
 into Floats and DateTime objects, checking if trip_time_in_secs lasted the duration of pickup_datetime 
 and dropoff_datetime (with a margin of error of 1 second), checking if longtitude and latitude values 
@@ -44,7 +44,7 @@ found inconsistencies in payment type and coordinates. Here are some examples:
       Payment is listed as "UNK".
 
 
-2. Data Sorting
+## Task 2: Data Sorting
 The sorting is done with the use of a PriorityQueue and a Map for effeciency purposes.
 The elemenets are added to the Priority queue and they are automatically sorted based
 on the comparator that is used. This is first done with the help of the Map. Elements
