@@ -44,6 +44,14 @@ found inconsistencies in payment type and coordinates. Here are some examples:
       Payment is listed as "UNK".
 
 
+2. Data Sorting
+The sorting is done with the use of a PriorityQueue and a Map for effeciency purposes.
+The elemenets are added to the Priority queue and they are automatically sorted based
+on the comparator that is used. This is first done with the help of the Map. Elements
+that are present in the PriorityQueue are then removed in descending order to provide
+the sorted file.
+
+
 ##  Course Name: CS378 - Cloud Computing 
 
 ##  Unique Number: 51515
