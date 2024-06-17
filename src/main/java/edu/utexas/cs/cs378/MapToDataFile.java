@@ -125,7 +125,7 @@ public class MapToDataFile {
 					throw new IllegalArgumentException();
 				}
 
-				if (!fields[10].equals("CSH") && !fields[10].equals("CRD")) {
+				if (!fields[10].equals("CSH") && !fields[10].equals("CRD") && !fields[10].equals("UNK")) {
 					System.out.println("Invalid payment type");
 					throw new IllegalArgumentException();
 				}
