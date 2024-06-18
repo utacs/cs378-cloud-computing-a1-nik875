@@ -353,50 +353,6 @@ public class MapToDataFile {
     }
   }
 
-  public static void sortData(String inputFile, String outputFile) {
-    Map<String, Float> lineToAmountMap = new HashMap<>();
-    PriorityQueue<Map.Entry<String, Float>> priorityQueue = new PriorityQueue<>(
-        Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
-
-    try {
-      FileInputStream fin = new FileInputStream(inputFile);
-      BufferedInputStream bis = new BufferedInputStream(fin);
-      CompressorInputStream input =
-          new CompressorStreamFactory().createCompressorInputStream(bis);
-      BufferedReader br = new BufferedReader(new InputStreamReader(input));
-
-      String line;
-      while ((line = br.readLine()) != null) {
-        try {
-          Float totalAmount = Float.parseFloat(line.split(",")[16]);
-          lineToAmountMap.put(line, totalAmount);
-        } catch (NumberFormatException e) {
-          System.err.println("Skipping line due to parse error: " + line);
-        }
-      }
-
-      priorityQueue.addAll(lineToAmountMap.entrySet());
-
-      try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
-        while (!priorityQueue.isEmpty()) {
-          Map.Entry<String, Float> entry = priorityQueue.poll();
-          bw.write(entry.getKey());
-          bw.newLine();
-        }
-      }
-
-      fin.close();
-      br.close();
-
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (CompressorException e) {
-      e.printStackTrace();
-    }
-  }
-
   public static void displayFirst10Lines(String outputFile) {
     try (BufferedReader br = new BufferedReader(
              new InputStreamReader(new FileInputStream(outputFile)))) {
