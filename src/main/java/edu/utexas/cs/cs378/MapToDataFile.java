@@ -30,10 +30,6 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
-class ThreadException extends Exception {
-  private static final long serialVersionUID = 1L;
-}
-
 class MyRunnable implements Runnable {
   private String file;
   private String outputDir;
@@ -51,10 +47,7 @@ class MyRunnable implements Runnable {
   }
   @Override
   public void run() {
-    try {
-      MapToDataFile.createThread(file, outputDir, batchSize, startpos, lock);
-    } catch (ThreadException e) {
-    }
+    MapToDataFile.createThread(file, outputDir, batchSize, startpos, lock);
   }
 }
 
@@ -70,7 +63,11 @@ public class MapToDataFile {
    */
   static boolean mapIt(String file, int batchSize, String outputDir,
                        int threads) {
-    initDir(outputDir);
+    try {
+      initDir(outputDir);
+    } catch (FileNotFoundException e) {
+      return false;
+    }
     Lock lock = new ReentrantLock();
     long[] startpos = {0};
     Thread[] all_threads = new Thread[threads];
@@ -83,7 +80,7 @@ public class MapToDataFile {
       }
       for (Thread t : all_threads)
         t.join();
-    } catch (ThreadException e) {
+    } catch (Exception e) {
       return false;
     }
     return true;
@@ -131,8 +128,7 @@ public class MapToDataFile {
   }
 
   public static void createThread(String file, String outputDir, int batchSize,
-                                  long[] startpos, Lock lock)
-      throws ThreadException {
+                                  long[] startpos, Lock lock) {
     try {
       FileInputStream fin = new FileInputStream(file);
       BufferedInputStream bis = new BufferedInputStream(fin);
@@ -172,19 +168,14 @@ public class MapToDataFile {
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new ThreadException();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new ThreadException();
-    } catch (CompressorException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new ThreadException();
     }
   }
 
-  public static ArrayList<String> readData(BufferedReader br, int batchSize) {
+  public static ArrayList<String> readData(BufferedReader br, int batchSize)
+      throws IOException {
     ArrayList<String> result = new ArrayList<>(batchSize);
     String line;
     for (int lineCounter = 0;
