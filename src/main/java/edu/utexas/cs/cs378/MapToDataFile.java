@@ -34,20 +34,23 @@ class MyRunnable implements Runnable {
   private String file;
   private String outputDir;
   private int batchSize;
-  private long[] startpos;
+  private BufferedReader br;
   private Lock lock;
+  private int[] batchesWritten;
   public MyRunnable(String file, String outputDir, int batchSize,
-                    long[] startpos, Lock lock) {
+                    BufferedReader br, Lock lock, int[] batchesWritten) {
     super();
     this.file = file;
     this.outputDir = outputDir;
     this.batchSize = batchSize;
-    this.startpos = startpos;
+    this.br = br;
     this.lock = lock;
+    this.batchesWritten = batchesWritten;
   }
   @Override
   public void run() {
-    MapToDataFile.createThread(file, outputDir, batchSize, startpos, lock);
+    MapToDataFile.createThread(file, outputDir, batchSize, br, lock,
+                               batchesWritten);
   }
 }
 
@@ -69,17 +72,23 @@ public class MapToDataFile {
       return false;
     }
     Lock lock = new ReentrantLock();
-    long[] startpos = {0};
     Thread[] all_threads = new Thread[threads];
     try {
+      FileInputStream fin = new FileInputStream(file);
+      BufferedInputStream bis = new BufferedInputStream(fin);
+      // Here we uncompress .bz2 file
+      BZip2CompressorInputStream input = new BZip2CompressorInputStream(bis);
+      BufferedReader br = new BufferedReader(new InputStreamReader(input));
+      int[] batchesWritten = {0};
       for (int i = 0; i < threads; i++) {
-        Runnable task =
-            new MyRunnable(file, outputDir, batchSize, startpos, lock);
+        Runnable task = new MyRunnable(file, outputDir, batchSize, br, lock,
+                                       batchesWritten);
         all_threads[i] = new Thread(task);
         all_threads[i].start();
       }
       for (Thread t : all_threads)
         t.join();
+      fin.close();
     } catch (Exception e) {
       return false;
     }
@@ -128,49 +137,31 @@ public class MapToDataFile {
   }
 
   public static void createThread(String file, String outputDir, int batchSize,
-                                  long[] startpos, Lock lock) {
+                                  BufferedReader br, Lock lock,
+                                  int[] batchesWritten) {
+    // Philosophy: single, serial decompression, multithreaded sorting/diskwrite
     try {
 
-      long myLastPos = 0;
       while (true) {
-		FileInputStream fin = new FileInputStream(file);
-		BufferedInputStream bis = new BufferedInputStream(fin);
-
-		// Here we uncompress .bz2 file
-		BZip2CompressorInputStream input = new BZip2CompressorInputStream(bis);
         lock.lock(); // Thread synchronization for finding start positions
-        if (startpos[0] == -1) // If we're done
-          break;
-		input.skip(startpos[0]); // Seek to the new startpos
-
-        myLastPos = startpos[0]; // Set myLastPos since skip() is cumulative
-        // New bufferedreader every time with a custom start position
-        BufferedReader br = new BufferedReader(new InputStreamReader(input));
-		if (startpos[0] != 0) {
-			String line = br.readLine();
-			startpos[0] += line.length();
-		}
+        long startTime = System.currentTimeMillis();
         // Read without error checking
         ArrayList<String> data = readData(br, batchSize);
 
-        long totalBytes = 0;
-        if (data.size() < batchSize) // If we're done
-          startpos[0] = -1;
-        else { // If not done, count bytes and update startpos
-          for (String s : data) {
-			
-            totalBytes += s.getBytes().length;
-		  }
-
-          startpos[0] += totalBytes;
+        if (data.size() == 0) { // If we're done
+          lock.unlock();        // Free lock so other threads can also finish
+          break;                // Exit loop and end thread
+        } else if (data.size() < batchSize) { // If we're almost done
+          System.out.println("Last batch with " + data.size() + " lines");
         }
+        int thisBatch = ++batchesWritten[0];
         lock.unlock(); // Free the lock so another thread can read
 
         // Check errors, sort data, output partial sort to new file
-        mapToFile(data, outputDir, String.valueOf(myLastPos));
-        // Consider that the cursor has also moved during read
-        myLastPos += totalBytes;
-		fin.close(); // Once we're done, close file
+        mapToFile(data, outputDir, String.valueOf(thisBatch));
+        double duration = (System.currentTimeMillis() - startTime) / 1000.0;
+        System.out.println("Wrote batch " + thisBatch + " in " + duration +
+                           "s");
       }
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
@@ -186,7 +177,7 @@ public class MapToDataFile {
     ArrayList<String> result = new ArrayList<>(batchSize);
     String line;
     for (int lineCounter = 0;
-         (line = br.readLine()) != null && lineCounter < batchSize;
+         lineCounter < batchSize && (line = br.readLine()) != null;
          lineCounter++) {
       result.add(line);
     }

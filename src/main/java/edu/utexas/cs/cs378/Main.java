@@ -17,8 +17,7 @@ public class Main {
     // This line is just for Kia :)
     // You should pass the file name and path as first argument of this main
     // method.
-    String file =
-        "/Users/ayaannazir/Desktop/CC/taxi-data-sorted-small.csv.bz2";
+    String file = "/Users/ayaannazir/Desktop/CC/taxi-data-sorted-small.csv.bz2";
     String outputFile = "SORTED-FILE-RESULT.txt";
 
     if (args.length > 0)
@@ -31,7 +30,7 @@ public class Main {
 
     String outputDir = "processedBatches";
 
-    boolean success = MapToDataFile.mapIt(file, batchSize, outputDir, 1);
+    boolean success = MapToDataFile.mapIt(file, batchSize, outputDir, 2);
     if (!success)
       System.out.println("Unhandled exception in MapToDataFile!");
 
