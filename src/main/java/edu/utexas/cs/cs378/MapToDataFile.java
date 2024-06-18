@@ -30,10 +30,6 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
-class ThreadException extends Exception {
-  private static final long serialVersionUID = 1L;
-}
-
 class MyRunnable implements Runnable {
   private String file;
   private String outputDir;
@@ -51,10 +47,7 @@ class MyRunnable implements Runnable {
   }
   @Override
   public void run() {
-    try {
-      MapToDataFile.createThread(file, outputDir, batchSize, startpos, lock);
-    } catch (ThreadException e) {
-    }
+    MapToDataFile.createThread(file, outputDir, batchSize, startpos, lock);
   }
 }
 
@@ -70,7 +63,11 @@ public class MapToDataFile {
    */
   static boolean mapIt(String file, int batchSize, String outputDir,
                        int threads) {
-    initDir(outputDir);
+    try {
+      initDir(outputDir);
+    } catch (FileNotFoundException e) {
+      return false;
+    }
     Lock lock = new ReentrantLock();
     long[] startpos = {0};
     Thread[] all_threads = new Thread[threads];
@@ -83,7 +80,7 @@ public class MapToDataFile {
       }
       for (Thread t : all_threads)
         t.join();
-    } catch (ThreadException e) {
+    } catch (Exception e) {
       return false;
     }
     return true;
@@ -131,24 +128,28 @@ public class MapToDataFile {
   }
 
   public static void createThread(String file, String outputDir, int batchSize,
-                                  long[] startpos, Lock lock)
-      throws ThreadException {
+                                  long[] startpos, Lock lock) {
     try {
-      FileInputStream fin = new FileInputStream(file);
-      BufferedInputStream bis = new BufferedInputStream(fin);
-
-      // Here we uncompress .bz2 file
-      BZip2CompressorInputStream input = new BZip2CompressorInputStream(bis);
 
       long myLastPos = 0;
       while (true) {
+		FileInputStream fin = new FileInputStream(file);
+		BufferedInputStream bis = new BufferedInputStream(fin);
+
+		// Here we uncompress .bz2 file
+		BZip2CompressorInputStream input = new BZip2CompressorInputStream(bis);
         lock.lock(); // Thread synchronization for finding start positions
         if (startpos[0] == -1) // If we're done
           break;
-        input.skip(startpos[0] - myLastPos); // Seek to the new startpos
+		input.skip(startpos[0]); // Seek to the new startpos
+
         myLastPos = startpos[0]; // Set myLastPos since skip() is cumulative
         // New bufferedreader every time with a custom start position
         BufferedReader br = new BufferedReader(new InputStreamReader(input));
+		if (startpos[0] != 0) {
+			String line = br.readLine();
+			startpos[0] += line.length();
+		}
         // Read without error checking
         ArrayList<String> data = readData(br, batchSize);
 
@@ -156,8 +157,10 @@ public class MapToDataFile {
         if (data.size() < batchSize) // If we're done
           startpos[0] = -1;
         else { // If not done, count bytes and update startpos
-          for (String s : data)
+          for (String s : data) {
+			
             totalBytes += s.getBytes().length;
+		  }
 
           startpos[0] += totalBytes;
         }
@@ -167,24 +170,19 @@ public class MapToDataFile {
         mapToFile(data, outputDir, String.valueOf(myLastPos));
         // Consider that the cursor has also moved during read
         myLastPos += totalBytes;
+		fin.close(); // Once we're done, close file
       }
-      fin.close(); // Once we're done, close file
     } catch (FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new ThreadException();
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      throw new ThreadException();
-    } catch (CompressorException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new ThreadException();
     }
   }
 
-  public static ArrayList<String> readData(BufferedReader br, int batchSize) {
+  public static ArrayList<String> readData(BufferedReader br, int batchSize)
+      throws IOException {
     ArrayList<String> result = new ArrayList<>(batchSize);
     String line;
     for (int lineCounter = 0;
@@ -271,10 +269,11 @@ public class MapToDataFile {
     //      throw new IllegalArgumentException();
     //    }
 
-    //    if (!fields[10].equals("CSH") && !fields[10].equals("CRD")) {
-    //      System.out.println("Invalid payment type");
-    //      throw new IllegalArgumentException();
-    //    }
+    if (!fields[10].equals("CSH") && !fields[10].equals("CRD") &&
+        !fields[10].equals("UNK")) {
+      System.out.println("Invalid payment type");
+      throw new IllegalArgumentException();
+    }
 
     Float fair_amount = Float.parseFloat(fields[11]);
     Float surcharge = Float.parseFloat(fields[12]);
@@ -349,50 +348,6 @@ public class MapToDataFile {
         bf.close();
       } catch (Exception e) {
       }
-    }
-  }
-
-  public static void sortData(String inputFile, String outputFile) {
-    Map<String, Float> lineToAmountMap = new HashMap<>();
-    PriorityQueue<Map.Entry<String, Float>> priorityQueue = new PriorityQueue<>(
-        Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
-
-    try {
-      FileInputStream fin = new FileInputStream(inputFile);
-      BufferedInputStream bis = new BufferedInputStream(fin);
-      CompressorInputStream input =
-          new CompressorStreamFactory().createCompressorInputStream(bis);
-      BufferedReader br = new BufferedReader(new InputStreamReader(input));
-
-      String line;
-      while ((line = br.readLine()) != null) {
-        try {
-          Float totalAmount = Float.parseFloat(line.split(",")[16]);
-          lineToAmountMap.put(line, totalAmount);
-        } catch (NumberFormatException e) {
-          System.err.println("Skipping line due to parse error: " + line);
-        }
-      }
-
-      priorityQueue.addAll(lineToAmountMap.entrySet());
-
-      try (BufferedWriter bw = new BufferedWriter(new FileWriter(outputFile))) {
-        while (!priorityQueue.isEmpty()) {
-          Map.Entry<String, Float> entry = priorityQueue.poll();
-          bw.write(entry.getKey());
-          bw.newLine();
-        }
-      }
-
-      fin.close();
-      br.close();
-
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (CompressorException e) {
-      e.printStackTrace();
     }
   }
 

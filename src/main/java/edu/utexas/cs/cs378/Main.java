@@ -18,13 +18,13 @@ public class Main {
     // You should pass the file name and path as first argument of this main
     // method.
     String file =
-        "src/main/java/edu/utexas/cs/cs378/taxi-data-sorted-small.csv.bz2";
+        "/Users/ayaannazir/Desktop/CC/taxi-data-sorted-small.csv.bz2";
     String outputFile = "SORTED-FILE-RESULT.txt";
 
     if (args.length > 0)
       file = args[0];
 
-    int batchSize = 4000;
+    int batchSize = 1_000_000;
 
     if (args.length > 1)
       batchSize = Integer.parseInt(args[1]);
