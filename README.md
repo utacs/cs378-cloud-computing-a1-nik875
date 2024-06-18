@@ -30,18 +30,18 @@ found inconsistencies in payment type and coordinates. Here are some examples:
 
    1. Line 2: Invalid Coordinates
       All coordinates read 0.
-   
-   2. Line 14: Invalid Coordinates
-      Dropoff longtitude and latitude read 0.
-   
-   3. Line 74: Invalid payment type
-      Payment is listed as "UNK".
 
-   4. Line 374: Invalid Coordinates
+   2. Line 2: Invalid Coordinates
       All coordinates read 0.
 
-   5. Line 516: Invalid payment type
-      Payment is listed as "UNK".
+   3. Line 8: Invalid Coordinates
+      Dropoff longtitude and latitude read 0.
+
+   4. Line 14: Invalid Coordinates
+      Dropoff longtitude and latitude read 0.
+
+   5. Line 374: Invalid Coordinates
+      All coordinates read 0.
 
 
 ## Task 2: Data Sorting
@@ -115,10 +115,3 @@ nohub mvn clean compile  exec:java -Dexec.executable="edu.utexas.cs.cs378.Main" 
 ```
 
 We recommend the above command for running the Main Java executable. 
-
-
-
-
-
-
-

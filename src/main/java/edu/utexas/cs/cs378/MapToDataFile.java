@@ -271,10 +271,11 @@ public class MapToDataFile {
     //      throw new IllegalArgumentException();
     //    }
 
-    //    if (!fields[10].equals("CSH") && !fields[10].equals("CRD")) {
-    //      System.out.println("Invalid payment type");
-    //      throw new IllegalArgumentException();
-    //    }
+    if (!fields[10].equals("CSH") && !fields[10].equals("CRD") &&
+        !fields[10].equals("UNK")) {
+      System.out.println("Invalid payment type");
+      throw new IllegalArgumentException();
+    }
 
     Float fair_amount = Float.parseFloat(fields[11]);
     Float surcharge = Float.parseFloat(fields[12]);
