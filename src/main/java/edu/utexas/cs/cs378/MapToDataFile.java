@@ -101,13 +101,14 @@ class RunMergeSort implements Runnable {
     if (inputs.size() == 0 ||
         inputs.get(0).length == 0) // If there's no files to merge
       return;
-    for (int i = inputs.size() - 1; i >= 0; i--)
+    for (int i = inputs.size() - 1; i >= 0; i--) {
       if (inputs.get(i).length == 1) {
         inputs.get(i)[0].renameTo(
-            new File(outputDir + "/" + inputs.get(i)[0].getName()));
+            new File(outputDir, inputs.get(i)[0].getName()));
         System.out.println("Moved " + inputs.get(i)[0].getPath());
         inputs.remove(i);
       }
+    }
     ArrayList<ArrayList<String>> batches = // Initialize batches container
         new ArrayList<>(inputs.get(0).length);
     // Traverse each batch in reverse order without actually reversing batch
