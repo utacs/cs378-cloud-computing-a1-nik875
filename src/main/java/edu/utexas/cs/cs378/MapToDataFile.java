@@ -450,8 +450,6 @@ public class MapToDataFile {
         System.out.println("Shrank batchesPerJob to " + --batchesPerJob);
       while (jobs > 1 && remainingFiles < jobs * batchesPerJob)
         System.out.println("Shrank jobs to " + --jobs);
-      if (jobs == 1)
-        batchesPerJob = remainingFiles;
 
       // Iterate over all files in current dir, flipping dir each time
       for (File[] files = dirs[current].listFiles();
