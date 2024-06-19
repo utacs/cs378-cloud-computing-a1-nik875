@@ -44,6 +44,6 @@ public class Main {
       System.out.println("Unhandled exception in MapToDataFile!");
 
     MapToDataFile.externalMergeSort("dirA", "dirB", outputFile, batchSize,
-                                    mergeBatchesPerJob, mergeJobs);
+                                    mergeJobs, mergeBatchesPerJob);
   }
 }
