@@ -23,18 +23,27 @@ public class Main {
     if (args.length > 0)
       file = args[0];
 
-    int batchSize = 1_000_000;
-
+    int batchSize = 100_000;
     if (args.length > 1)
       batchSize = Integer.parseInt(args[1]);
 
-    String outputDir = "processedBatches";
+    int jobs = 1;
+    if (args.length > 2)
+      jobs = Integer.parseInt(args[2]);
 
-    boolean success = MapToDataFile.mapIt(file, batchSize, outputDir, 2);
-    if (!success)
+    int mergeJobs = jobs;
+    if (args.length > 3)
+      mergeJobs = Integer.parseInt(args[3]);
+
+    int mergeBatchesPerJob = 2;
+    if (args.length > 4)
+      mergeBatchesPerJob = Integer.parseInt(args[4]);
+
+    int success = MapToDataFile.mapIt(file, batchSize, "dirA", jobs);
+    if (success == 0)
       System.out.println("Unhandled exception in MapToDataFile!");
 
-    //		MapToDataFile.sortData(file, outputFile);
-    //        MapToDataFile.displayFirst10Lines(outputFile);
+    MapToDataFile.externalMergeSort("dirA", "dirB", outputFile, batchSize,
+                                    mergeBatchesPerJob, mergeJobs);
   }
 }

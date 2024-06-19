@@ -12,6 +12,12 @@
 
 target
 processedBatches
+dirB
+dirA
+processedBatches.bak
+tmp
+taxi-data*
+SORTED-FILE-RESULT.txt
 
 # Package Files #
 *.jar
