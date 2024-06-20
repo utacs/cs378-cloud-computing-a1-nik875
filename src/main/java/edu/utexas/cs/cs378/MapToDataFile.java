@@ -450,6 +450,7 @@ public class MapToDataFile {
   public static boolean externalMergeSort(String dirA, String dirB,
                                           String outfile, int batchSize,
                                           int jobs, int batchesPerJob) {
+    int origBatchesPerJob = batchesPerJob;
     try {
       // First dir has initial sort output, second dir must be empty
       initDir(dirB);
@@ -505,8 +506,12 @@ public class MapToDataFile {
           break;
         while (batchesPerJob > 2 && remainingFiles < jobs * batchesPerJob)
           System.out.println("Shrank batchesPerJob to " + --batchesPerJob);
-        while (jobs > 1 && remainingFiles < jobs * batchesPerJob)
-          System.out.println("Shrank jobs to " + --jobs);
+        while (jobs > 1 && remainingFiles < jobs * batchesPerJob) {
+          System.out.println("Shrank jobs to " + --jobs + " and reset batchesPerJob");
+	  batchesPerJob = origBatchesPerJob;
+          while (batchesPerJob > 2 && remainingFiles < jobs * batchesPerJob)
+            System.out.println("Shrank batchesPerJob to " + --batchesPerJob);
+	}
       }
       File[] leftoverFiles = dirs[current].listFiles();
       leftoverFiles[0].renameTo(new File(outfile));
