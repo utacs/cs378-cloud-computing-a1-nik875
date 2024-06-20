@@ -150,6 +150,11 @@ class RunMergeSort implements Runnable {
           for (int i = 0; i < buffer.length; i++)
             if (buffer[i] == null)
               toReplace.add(i);
+	    else if (scores[i] < 0) {
+	      System.out.println("Negative balance error");
+	      System.out.println(buffer[i]);
+	      toReplace.add(i);
+	    }
             else if (scores[i] > (selectedIdx >= 0 ? scores[selectedIdx] : -1))
               selectedIdx = i;
           if (selectedIdx >= 0) {
@@ -184,7 +189,7 @@ class RunMergeSort implements Runnable {
             if (!bufferCompleted[i]) { // If this file isn't completed
               // Add the string line to buffer and parse to get score
               buffer[i] = batches.get(i).get(posAlongBatch[i]++);
-              scores[i] = MapToDataFile.processLine(buffer[i], formatter);
+	      scores[i] = MapToDataFile.processLine(buffer[i], formatter);
             }
           }
           toReplace.clear(); // Reset clear array
