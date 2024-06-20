@@ -15,18 +15,16 @@
 
    Student UT EID: nk23452
 
-4. Student Name: 
+4. Student Name: Satwik Misra
 
    Student UT EID: 
 
 
 ## Task 1: Data Cleanup
 In our project, we handled data cleanup by checking if the corresponding strings could be converted 
-into Floats and DateTime objects, checking if trip_time_in_secs lasted the duration of pickup_datetime 
-and dropoff_datetime (with a margin of error of 1 second), checking if longtitude and latitude values 
-were non-zero (zero is in the middle of the ocean, somewhere a NYC cab cannot travel to), and checking 
-if the payment type were CSH or CRD. We used "taxi-data-sorted-small.csv.bz2" to test data cleaning, and
-found inconsistencies in payment type and coordinates. Here are some examples:
+into Floats and DateTime objects, checking if total_amount there are negative balances, and checking 
+if the payment type were CSH or CRD. We used "taxi-data-sorted-small.csv.bz2" to test data cleaning, 
+and found inconsistencies in payment types, totals, and data types. Here are some examples:
 
 1. Negative balance error
 DBA03C39ED8C744C7624D3E40E88893D,C069C625BEA9376E5A1D1BB7A58FBE90,2013-08-24 07:07:10,2013-08-24 07:12:00,290,0.77,-74.014198,40.715660,-74.010475,40.725368,CSH,-100.00,0.00,-0.50,0.00,0.00,-100.50
@@ -55,9 +53,12 @@ The sorting is done with the use of a PriorityQueue and a Map for effeciency pur
 The elemenets are added to the Priority queue and they are automatically sorted based
 on the comparator that is used. This is first done with the help of the Map. Elements
 that are present in the PriorityQueue are then removed in descending order to provide
-the sorted file.
+the sorted file. This sorting algorithm was used in parallel as we decompressed each 
+batch of the bz2 file. These batches were then merged together in an external n-way
+merge by selecting the highest values from each batch. The results can be seen by
+running the algorithm on the small dataset.
 
-## Task3: Cloud Results
+## Task 3: Cloud Results
 The following is the head after merging the large dataset:
 
 1. 89EDAF45090C74611B52AFFC3E10A69D,664927CDE376A32789BA48BF55DFB7E3,2013-08-14 21:29:00,2013-08-14 21:53:00,1440,11.62,-73.993378,40.764465,-73.877792,40.826706,CSH,33.00,0.50,0.50,0.00,0.00,685908.10
