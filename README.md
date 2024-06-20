@@ -28,20 +28,8 @@ were non-zero (zero is in the middle of the ocean, somewhere a NYC cab cannot tr
 if the payment type were CSH or CRD. We used "taxi-data-sorted-small.csv.bz2" to test data cleaning, and
 found inconsistencies in payment type and coordinates. Here are some examples:
 
-   1. Line 2: Invalid Coordinates
-      All coordinates read 0.
+   ![Uploading Screenshot 2024-06-19 at 7.19.20 PM.png…]()
 
-   2. Line 2: Invalid Coordinates
-      All coordinates read 0.
-
-   3. Line 8: Invalid Coordinates
-      Dropoff longtitude and latitude read 0.
-
-   4. Line 14: Invalid Coordinates
-      Dropoff longtitude and latitude read 0.
-
-   5. Line 374: Invalid Coordinates
-      All coordinates read 0.
 
 
 ## Task 2: Data Sorting
