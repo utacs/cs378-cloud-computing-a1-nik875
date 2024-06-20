@@ -150,6 +150,11 @@ class RunMergeSort implements Runnable {
           for (int i = 0; i < buffer.length; i++)
             if (buffer[i] == null)
               toReplace.add(i);
+	    else if (scores[i] < 0) {
+	      System.out.println("Negative balance error");
+	      System.out.println(buffer[i]);
+	      toReplace.add(i);
+	    }
             else if (scores[i] > (selectedIdx >= 0 ? scores[selectedIdx] : -1))
               selectedIdx = i;
           if (selectedIdx >= 0) {
@@ -184,7 +189,7 @@ class RunMergeSort implements Runnable {
             if (!bufferCompleted[i]) { // If this file isn't completed
               // Add the string line to buffer and parse to get score
               buffer[i] = batches.get(i).get(posAlongBatch[i]++);
-              scores[i] = MapToDataFile.processLine(buffer[i], formatter);
+	      scores[i] = MapToDataFile.processLine(buffer[i], formatter);
             }
           }
           toReplace.clear(); // Reset clear array
@@ -356,7 +361,7 @@ public class MapToDataFile {
 
     if (!fields[10].equals("CSH") && !fields[10].equals("CRD") &&
         !fields[10].equals("UNK")) {
-      System.out.println("Invalid payment type");
+      //System.out.println("Invalid payment type");
       throw new IllegalArgumentException();
     }
 
@@ -411,7 +416,7 @@ public class MapToDataFile {
         System.out.println("DateTime error");
         System.out.println(line);
       } catch (IllegalArgumentException e) {
-        System.out.println(line);
+        //System.out.println(line);
       }
     }
 
@@ -450,6 +455,7 @@ public class MapToDataFile {
   public static boolean externalMergeSort(String dirA, String dirB,
                                           String outfile, int batchSize,
                                           int jobs, int batchesPerJob) {
+    int origBatchesPerJob = batchesPerJob;
     try {
       // First dir has initial sort output, second dir must be empty
       initDir(dirB);
@@ -505,8 +511,12 @@ public class MapToDataFile {
           break;
         while (batchesPerJob > 2 && remainingFiles < jobs * batchesPerJob)
           System.out.println("Shrank batchesPerJob to " + --batchesPerJob);
-        while (jobs > 1 && remainingFiles < jobs * batchesPerJob)
-          System.out.println("Shrank jobs to " + --jobs);
+        while (jobs > 1 && remainingFiles < jobs * batchesPerJob) {
+          System.out.println("Shrank jobs to " + --jobs + " and reset batchesPerJob");
+	  batchesPerJob = origBatchesPerJob;
+          while (batchesPerJob > 2 && remainingFiles < jobs * batchesPerJob)
+            System.out.println("Shrank batchesPerJob to " + --batchesPerJob);
+	}
       }
       File[] leftoverFiles = dirs[current].listFiles();
       leftoverFiles[0].renameTo(new File(outfile));
