@@ -356,7 +356,7 @@ public class MapToDataFile {
 
     if (!fields[10].equals("CSH") && !fields[10].equals("CRD") &&
         !fields[10].equals("UNK")) {
-      System.out.println("Invalid payment type");
+      //System.out.println("Invalid payment type");
       throw new IllegalArgumentException();
     }
 
@@ -411,7 +411,7 @@ public class MapToDataFile {
         System.out.println("DateTime error");
         System.out.println(line);
       } catch (IllegalArgumentException e) {
-        System.out.println(line);
+        //System.out.println(line);
       }
     }
 
