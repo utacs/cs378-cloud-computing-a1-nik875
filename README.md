@@ -59,7 +59,8 @@ merge by selecting the highest values from each batch. The results can be seen b
 running the algorithm on the small dataset.
 
 ## Task 3: Cloud Results
-The following is the head after merging the large dataset:
+The required screenshots have been uploaded to the main Github repository. The following 
+is the head after merging the large dataset:
 
 1. 89EDAF45090C74611B52AFFC3E10A69D,664927CDE376A32789BA48BF55DFB7E3,2013-08-14 21:29:00,2013-08-14 21:53:00,1440,11.62,-73.993378,40.764465,-73.877792,40.826706,CSH,33.00,0.50,0.50,0.00,0.00,685908.10
 2. CC664699259C9867E735976611A82F64,E4F99C9ABE9861F18BCD38BC63D007A9,2013-08-05 18:01:00,2013-08-05 18:10:00,540,1.80,-73.968628,40.762646,-73.979111,40.777706,CSH,8.50,1.00,0.50,0.00,0.00,541432.56
